@@ -271,10 +271,17 @@ h3 {
   font-weight: 700;
   box-shadow: 0 8px 20px rgba(20, 70, 80, 0.05);
 }
-.scenario-button:hover {
+.scenario-button:not(.selected):hover {
   border-color: var(--teal);
   color: var(--teal-dark);
   transform: translateY(-1px);
+}
+.scenario-button.selected {
+  background: var(--teal);
+  color: white;
+}
+.scenario-button.selected:hover {
+  cursor: auto;
 }
 
 .calculator-layout {

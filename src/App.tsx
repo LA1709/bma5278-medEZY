@@ -1,6 +1,6 @@
 import { useMemo, useState, type ChangeEvent } from 'react';
 import { Activity, Beaker, BookOpen, ShieldCheck, Stethoscope } from 'lucide-react';
-import { Methodology } from './components/Methodology';
+// import { Methodology } from './components/Methodology';
 import { PillarCard } from './components/PillarCard';
 import { ScoreGauge } from './components/ScoreGauge';
 import { SimulationLab } from './components/SimulationLab';
@@ -89,6 +89,7 @@ const fieldConfig: Array<{
   ];
 
 function Calculator() {
+  const [preset, setPreset] = useState<string>('Clinical gap');
   const [input, setInput] = useState<ScoreInputs>(scenarios['Clinical gap']);
   const calculation = useMemo(() => {
     try {
@@ -131,11 +132,14 @@ function Calculator() {
       </div>
 
       <div className="scenario-row">
-      <h3>Preset Scores:</h3>
+        <h3>Preset Scores:</h3>
         {Object.entries(scenarios).map(([name, values]) => (
-          <button key={name} className="scenario-button" onClick={() => setInput(values)}>
-            {name}
-          </button>
+          <button key={name} className={
+            `scenario-button${preset === name ? " selected" : ""}`
+          } onClick={() => {
+            setPreset(name);
+            setInput(values);
+          }}> {name} </button>
         ))}
       </div>
 
