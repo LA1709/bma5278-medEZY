@@ -35,25 +35,6 @@ Open the local URL shown by Vite, usually `http://localhost:3000`.
 npm test
 ```
 
-## Generate a reproducible dataset
-
-```bash
-npm run generate:data
-```
-
-Optional size and seed:
-
-```bash
-npm run generate:data -- 10000 5278
-```
-
-This creates:
-
-```text
-data/synthetic_patients.csv
-data/validation_summary.json
-```
-
 ## Build the production version
 
 ```bash
