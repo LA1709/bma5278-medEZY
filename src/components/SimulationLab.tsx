@@ -52,13 +52,17 @@ export function SimulationLab() {
     <section className="stack-xl">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">Synthetic evaluation</span>
+          <span className="eyebrow">Synthetic evaluation - for grading</span>
           <h2>Score Simulation Lab</h2>
           <p>
             Generate sample data, Inspect the generated data and See our model in action!
           </p>
         </div>
       </div>
+
+      <p className="callout neutral">
+        <b>For Academic Demonstration:</b>This simulator is intended for model evaluation using synthetic cohorts; the customers can only access the Score Calculator.
+      </p>
 
       <div className="control-panel">
         <label>
@@ -100,10 +104,6 @@ export function SimulationLab() {
           <Download size={17} /> Export CSV
         </button>
       </div>
-
-      <p className="callout neutral">
-        These figures measure agreement with predefined synthetic scenarios. They do not establish real-world clinical accuracy.
-      </p>
 
       <article className="panel">
         <span className="eyebrow">Generated Samples</span>

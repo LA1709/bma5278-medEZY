@@ -141,6 +141,7 @@ h2 {
   font-size: clamp(1.6rem, 3vw, 2.25rem);
   letter-spacing: -0.035em;
   color: var(--navy);
+  margin-bottom: 4px;
 }
 h3 {
   font-size: 1.12rem;
@@ -234,6 +235,7 @@ h3 {
   gap: 6px;
   box-shadow: none;
   line-height: 1.5;
+  margin-top: 4px;
 }
 .callout.warning {
   background: #fff9e8;
