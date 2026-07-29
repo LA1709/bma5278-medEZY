@@ -1,14 +1,14 @@
 import { useMemo, useState, type ChangeEvent } from 'react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+// import {
+//   Bar,
+//   BarChart,
+//   CartesianGrid,
+//   Legend,
+//   ResponsiveContainer,
+//   Tooltip,
+//   XAxis,
+//   YAxis,
+// } from 'recharts';
 import { Download, Play, RefreshCw } from 'lucide-react';
 import { cohortToCsv, downloadText } from '../lib/csv';
 import { evaluateV1, evaluateV2, STATUS_ORDER } from '../lib/evaluation';
@@ -40,11 +40,11 @@ export function SimulationLab() {
   const v1 = useMemo(() => evaluateV1(cohort), [cohort]);
   const v2 = useMemo(() => evaluateV2(cohort), [cohort]);
 
-  const chartData = STATUS_ORDER.map((status) => ({
-    status: formatStatus(status),
-    'Legacy v1': v1.predictedCounts[status] ?? 0,
-    'Revised v2': v2.predictedCounts[status] ?? 0,
-  }));
+  // const chartData = STATUS_ORDER.map((status) => ({
+  //   status: formatStatus(status),
+  //   'Legacy v1': v1.predictedCounts[status] ?? 0,
+  //   'Revised v2': v2.predictedCounts[status] ?? 0,
+  // }));
 
   const regenerate = () => setCohort(generateCohort(size, seed));
 

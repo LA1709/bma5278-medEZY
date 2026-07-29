@@ -11,6 +11,10 @@ export type Phenotype =
   | 'CLINICAL_GAP'
   | 'SAFETY_EVENT';
 
+export type ScoreEntry = {
+  date: string;
+  score: number;
+}
 export interface ScoreInputs {
   systolic: number;
   diastolic: number;

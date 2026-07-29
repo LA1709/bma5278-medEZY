@@ -1,14 +1,24 @@
 import { useMemo, useState, type ChangeEvent } from 'react';
-import { Activity, Beaker, BookOpen, ShieldCheck, Stethoscope } from 'lucide-react';
+import { Activity, Beaker, Stethoscope, ToggleLeft, ToggleRight } from 'lucide-react';
 // import { Methodology } from './components/Methodology';
+import {
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Label,
+  CartesianGrid
+} from "recharts";
 import { PillarCard } from './components/PillarCard';
 import { ScoreGauge } from './components/ScoreGauge';
 import { SimulationLab } from './components/SimulationLab';
 import { calculateLegacyScore } from './lib/scoringV1';
 import { calculateMonitoringScore, formatStatus } from './lib/scoringV2';
-import type { ScoreInputs } from './lib/types';
+import type { ScoreInputs, ScoreEntry } from './lib/types';
 
-type Tab = 'calculator' | 'simulation' | 'methodology';
+type Tab = 'calculator' | 'simulation';
 
 const scenarios: Record<string, ScoreInputs> = {
   'On track': {
@@ -68,6 +78,39 @@ const scenarios: Record<string, ScoreInputs> = {
   // },
 };
 
+let tempScore = 68 + Math.floor(Math.random() * 5); // 68–72
+const baseline = tempScore;
+
+const chartData: ScoreEntry[] = Array.from({ length: 31 }, (_, i) => {
+  const date = new Date();
+  date.setDate(date.getDate() - 30 + i);
+
+  let delta: number;
+  const r = Math.random();
+
+  if (r < 0.65) {
+    // Most days: tiny change
+    delta = Math.floor(Math.random() * 5) - 2; // -2..2
+  } else if (r < 0.9) {
+    // Sometimes: noticeable change
+    delta = Math.floor(Math.random() * 7) - 3; // -3..3
+  } else {
+    // Rarely: bad/good day
+    delta = (Math.random() < 0.5 ? -1 : 1) * (4 + Math.floor(Math.random() * 3)); // ±4..6
+  }
+
+  // Gentle pull back toward the baseline
+  if (tempScore > baseline + 6) delta -= 1;
+  if (tempScore < baseline - 6) delta += 1;
+
+  tempScore = Math.max(50, Math.min(80, tempScore + delta));
+
+  return {
+    date: date.toISOString().split("T")[0],
+    score: tempScore,
+  };
+});
+
 const fieldConfig: Array<{
   key: keyof ScoreInputs;
   label: string;
@@ -88,7 +131,92 @@ const fieldConfig: Array<{
     // { key: 'hrv', label: 'HRV (legacy only)', unit: 'ms', min: 5, max: 120, step: 1, legacy: true },
   ];
 
-function Calculator() {
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+});
+
+const tooltipFormatter = new Intl.DateTimeFormat("en-GB", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+const ScoreHistoryChart = () => {
+  return (
+    <ResponsiveContainer width="100%" height={340}>
+      <LineChart
+        data={chartData}
+        margin={{ top: 20, right: 24, left: 12, bottom: 12 }}
+      >
+        <CartesianGrid
+          stroke="#e5e7eb"
+          strokeDasharray="3 3"
+          vertical={false}
+        />
+
+        <XAxis
+          dataKey="date"
+          tickFormatter={(value) => dateFormatter.format(new Date(value))}
+          minTickGap={20}
+          axisLine={{ stroke: "#d1d5db" }}
+          tickLine={false}
+          tick={{ fill: "#6b7280", fontSize: 12 }}
+        >
+          <Label
+            value="Date"
+            position="insideBottom"
+            offset={-10}
+            style={{ fill: "#6b7280" }}
+          />
+        </XAxis>
+
+        <YAxis
+          domain={[50, 80]}
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: "#6b7280", fontSize: 12 }}
+        >
+          <Label
+            value="Health Score"
+            angle={-90}
+            position="insideLeft"
+            style={{ textAnchor: "middle", fill: "#6b7280" }}
+          />
+        </YAxis>
+
+        <Tooltip
+          labelFormatter={(value) =>
+            tooltipFormatter.format(new Date(value as string))
+          }
+          contentStyle={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 8,
+            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+          }}
+          cursor={{ stroke: "#0f9f9a", strokeOpacity: 0.2 }}
+        />
+
+        <Line
+          type="monotone"
+          dataKey="score"
+          stroke="#0f9f9a"
+          strokeWidth={3}
+          dot={{ r: 3, fill: "#0f9f9a", strokeWidth: 0 }}
+          activeDot={{
+            r: 6,
+            fill: "#0f9f9a",
+            stroke: "#fff",
+            strokeWidth: 2,
+          }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+const Calculator = ({ isDemo }: { isDemo: boolean }) => {
   const [preset, setPreset] = useState<string>('Clinical gap');
   const [input, setInput] = useState<ScoreInputs>(scenarios['Clinical gap']);
   const calculation = useMemo(() => {
@@ -131,8 +259,8 @@ function Calculator() {
         </div>
       </div>
 
-      <div className="scenario-row">
-        <h3>Preset Scores:</h3>
+      {isDemo && <div className="scenario-row">
+        <h3>Choose a preset:</h3>
         {Object.entries(scenarios).map(([name, values]) => (
           <button key={name} className={
             `scenario-button${preset === name ? " selected" : ""}`
@@ -141,7 +269,7 @@ function Calculator() {
             setInput(values);
           }}> {name} </button>
         ))}
-      </div>
+      </div>}
 
       <div className="calculator-layout">
         <aside className="panel input-panel">
@@ -195,9 +323,9 @@ function Calculator() {
               </article>
             ))}
 
-            <div className="pillar-grid">
+            {isDemo ? <div className="pillar-grid">
               {results.v2.pillars.map((pillar) => <PillarCard key={pillar.key} pillar={pillar} />)}
-            </div>
+            </div> : <ScoreHistoryChart />}
 
             {/* <article className="panel legacy-comparison">
               <div>
@@ -223,6 +351,7 @@ function Calculator() {
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('calculator');
+  const [isDemo, setIsDemo] = useState<boolean>(false);
 
   return (
     <div className="app-shell">
@@ -232,12 +361,15 @@ export default function App() {
           <span>MedEZY <small>Score Lab</small></span>
         </a>
         <nav>
+          <button className={isDemo ? 'active' : ''} onClick={() => { setIsDemo(!isDemo); setTab('calculator') }}>
+            {isDemo ? <ToggleRight /> : <ToggleLeft />} Demo Mode
+          </button>
           <button className={tab === 'calculator' ? 'active' : ''} onClick={() => setTab('calculator')}>
             <Activity size={17} /> Calculator
           </button>
-          <button className={tab === 'simulation' ? 'active' : ''} onClick={() => setTab('simulation')}>
+          {isDemo && <button className={tab === 'simulation' ? 'active' : ''} onClick={() => setTab('simulation')}>
             <Beaker size={17} /> Simulation Lab
-          </button>
+          </button>}
           {/* <button className={tab === 'methodology' ? 'active' : ''} onClick={() => setTab('methodology')}>
             <BookOpen size={17} /> Methodology
           </button> */}
@@ -245,7 +377,7 @@ export default function App() {
       </header>
 
       <main id="top">
-        {tab === 'calculator' && <Calculator />}
+        {tab === 'calculator' && <Calculator isDemo={isDemo} />}
         {tab === 'simulation' && <SimulationLab />}
         {/* {tab === 'methodology' && <Methodology />} */}
       </main>
