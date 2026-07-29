@@ -69,7 +69,7 @@ export function detectSafetyAlerts(input: ScoreInputs): SafetyAlert[] {
     alerts.push({
       severity: 'critical',
       code: 'SEVERE_BP',
-      message: 'Severely elevated blood pressure detected. This overrides the composite score.',
+      message: 'Severely elevated blood pressure detected. This event overrides your MedEZY score.',
     });
   }
 
@@ -77,7 +77,7 @@ export function detectSafetyAlerts(input: ScoreInputs): SafetyAlert[] {
     alerts.push({
       severity: 'critical',
       code: 'LEVEL_2_HYPOGLYCEMIA',
-      message: 'Very low glucose detected. This overrides the composite score.',
+      message: 'Very low glucose detected. This event overrides your MedEZY score.',
     });
   } else if (input.fastingGlucose < 70) {
     alerts.push({

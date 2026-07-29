@@ -241,18 +241,19 @@ const Calculator = ({ isDemo }: { isDemo: boolean }) => {
   return (
     <section className="stack-xl">
       <div className="hero-grid">
-        <div>
+        {isDemo ? <div>
           <span className="eyebrow">Explainable decision support prototype</span>
           <h1>The MedEZY Score</h1>
           <p className="hero-copy">
             A transparent five-pillar monitoring index with non-compensatory safety rules and a reproducible synthetic evaluation lab.
           </p>
-          {/* <div className="hero-tags">
-            <span><ShieldCheck size={16} /> Safety first</span>
-            <span><Activity size={16} /> Equal weighting</span>
-            <span><Beaker size={16} /> Simulation tested</span>
-          </div> */}
-        </div>
+        </div> : <div>
+          <span className="eyebrow">Your Personal Health Assistant</span>
+          <h1>Hi Anjali</h1>
+          <p className="hero-copy">
+            Know how you're doing today. Track your health, see your score, and discover small changes that can make a big difference.
+          </p>
+        </div>}
         <div className="callout warning">
           <strong>Academic prototype</strong>
           <span>(Not a diagnosis, treatment recommendation, or clinically<br />validated risk model)</span>
